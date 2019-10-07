@@ -104,16 +104,9 @@ var LocationServicesWithoutPermission = {
    * @param {Function} errorCallback      The function to call when there is an error getting the heading position. (OPTIONAL)
    * @param {PositionOptions} options     The options for getting the position data. (OPTIONAL)
    */
-  getCurrentPosition: function(options) {
+  getCurrentPosition: function(successCallback, errorCallback, options) {
     argscheck.checkArgs('fFO', 'LocationServices.getCurrentPosition', arguments);
     options = parseParameters(options);
-
-    successCallback = function(res) {
-      return Promise.resolve(res)
-    };
-    errorCallback = function(err) {
-      return Promise.reject(err)
-    };
 
     // Timer var that will fire an error callback if no position is retrieved from native
     // before the "timeout" param provided expires
