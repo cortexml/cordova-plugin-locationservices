@@ -104,9 +104,12 @@ var LocationServicesWithoutPermission = {
    * @param {Function} errorCallback      The function to call when there is an error getting the heading position. (OPTIONAL)
    * @param {PositionOptions} options     The options for getting the position data. (OPTIONAL)
    */
-  getCurrentPosition: function(successCallback, errorCallback, options) {
+  getCurrentPosition: function(options) {
     argscheck.checkArgs('fFO', 'LocationServices.getCurrentPosition', arguments);
     options = parseParameters(options);
+
+    successCallback = Promise.resolve;
+    errorCallback = Promise.reject;
 
     // Timer var that will fire an error callback if no position is retrieved from native
     // before the "timeout" param provided expires
@@ -147,13 +150,13 @@ var LocationServicesWithoutPermission = {
     // fire the success callback with the cached position.
     if (LocationServicesWithoutPermission.lastPosition && options.maximumAge && ((Date.now() - LocationServicesWithoutPermission.lastPosition.timestamp) <= options.maximumAge)) {
       successCallback(LocationServicesWithoutPermission.lastPosition);
-    // If the cached position check failed and the timeout was set to 0, error out with a TIMEOUT error object.
+      // If the cached position check failed and the timeout was set to 0, error out with a TIMEOUT error object.
     } else if (options.timeout === 0) {
       fail({
         code: PositionError.TIMEOUT,
         message: "timeout value in PositionOptions set to 0 and no cached Position object available, or cached Position object's age exceeds provided PositionOptions' maximumAge parameter."
       });
-    // Otherwise we have to call into native to retrieve a position.
+      // Otherwise we have to call into native to retrieve a position.
     } else {
       if (options.timeout !== Infinity) {
         // If the timeout value was not set to Infinity (default), then
