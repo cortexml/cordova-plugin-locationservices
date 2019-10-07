@@ -108,8 +108,12 @@ var LocationServicesWithoutPermission = {
     argscheck.checkArgs('fFO', 'LocationServices.getCurrentPosition', arguments);
     options = parseParameters(options);
 
-    successCallback = Promise.resolve;
-    errorCallback = Promise.reject;
+    successCallback = function(res) {
+      return Promise.resolve(res)
+    };
+    errorCallback = function(err) {
+      return Promise.reject(err)
+    };
 
     // Timer var that will fire an error callback if no position is retrieved from native
     // before the "timeout" param provided expires
