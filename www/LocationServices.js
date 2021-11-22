@@ -115,6 +115,8 @@ var LocationServicesWithoutPermission = {
         };
 
         var win = function(p) {
+            alert('called!')
+            alert(JSON.stringify(p))
             clearTimeout(timeoutTimer.timer);
             if (!(timeoutTimer.timer)) {
                 // Timeout already happened, or native fired error callback for
