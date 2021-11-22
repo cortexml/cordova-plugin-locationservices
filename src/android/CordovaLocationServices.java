@@ -177,6 +177,9 @@ public class CordovaLocationServices extends CordovaPlugin implements
                 mGApiClient.connect();
             }
             if (action.equals("getLocation")) {
+                fail(CordovaLocationListener.POSITION_UNAVAILABLE,
+                        "Oh no.", callbackContext,
+                        false);
                 if (mGApiClient.isConnected()) {
                     getLastLocation(args, callbackContext);
                 } else {
