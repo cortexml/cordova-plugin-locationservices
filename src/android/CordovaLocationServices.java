@@ -183,7 +183,6 @@ public class CordovaLocationServices extends CordovaPlugin implements
                 mGApiClient.connect();
             }
             if (action.equals("getLocation")) {
-                // fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
                 LocationRequest locationRequest = new LocationRequest();
                 locationRequest.setMaxWaitTime(30000);
                 locationRequest.setInterval(10000);
@@ -198,34 +197,15 @@ public class CordovaLocationServices extends CordovaPlugin implements
                         }
                         for (Location location : locationResult.getLocations()) {
                             if (location != null) {
-                                //TODO: UI updates.
+                                PluginResult result = new PluginResult(PluginResult.Status.OK,
+                                        returnLocationJSON(last));
+                                callbackContext.sendPluginResult(result);
                             }
                         }
                     }
                 };
                 fusedLocationClient.requestLocationUpdates(locationRequest, mLocationCallback, null);
-                // locationCallback = new LocationCallback(){
-                //   @Override
-                //   public void onLocationResult(LocationResult locationResult) {
-                //     if (call.getMethodName().equals("getCurrentPosition")) {
-                //       clearLocationUpdates();
-                //     }
-                //     Location lastLocation = locationResult.getLastLocation();
-                //     if (lastLocation == null) {
-                //       call.error("location unavailable");
-                //     } else {
-                //       call.success(getJSObjectForLocation(lastLocation));
-                //     }
-                //   }
-                //   @Override
-                //   public void onLocationAvailability(LocationAvailability availability) {
-                //     if (!availability.isLocationAvailable()) {
-                //       call.error("location unavailable");
-                //       clearLocationUpdates();
-                //     }
-                //   }
-                // };
-                // fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
+
 
                 fail(CordovaLocationListener.POSITION_UNAVAILABLE,
                         fusedLocationClient.toString(), callbackContext,
