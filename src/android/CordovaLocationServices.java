@@ -187,6 +187,7 @@ public class CordovaLocationServices extends CordovaPlugin implements
                 locationRequest.setInterval(10000);
                 locationRequest.setFastestInterval(5000);
                 locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+                Location location = fusedLocationClient.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY);
                 // locationCallback = new LocationCallback(){
                 //   @Override
                 //   public void onLocationResult(LocationResult locationResult) {
