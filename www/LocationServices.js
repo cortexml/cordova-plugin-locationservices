@@ -115,7 +115,6 @@ var LocationServicesWithoutPermission = {
         };
 
         var win = function(p) {
-            alert(JSON.stringify(p))
             clearTimeout(timeoutTimer.timer);
             if (!(timeoutTimer.timer)) {
                 // Timeout already happened, or native fired error callback for
@@ -136,8 +135,6 @@ var LocationServicesWithoutPermission = {
             successCallback(pos);
         };
         var fail = function(e) {
-            alert('error')
-            alert(JSON.stringify(e))
             clearTimeout(timeoutTimer.timer);
             timeoutTimer.timer = null;
             var err = new PositionError(e.code, e.message);
