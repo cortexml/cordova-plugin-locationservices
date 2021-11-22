@@ -182,7 +182,7 @@ public class CordovaLocationServices extends CordovaPlugin implements
                 // Check if we can use lastKnownLocation to get a quick reading and use
                 // less battery
                 fail(CordovaLocationListener.POSITION_UNAVAILABLE,
-                        last.getLatitude(), callbackContext,
+                        last.getLatitude()+"", callbackContext,
                         false);
                 // PluginResult result = new PluginResult(PluginResult.Status.OK,
                 //         returnLocationJSON(last));
