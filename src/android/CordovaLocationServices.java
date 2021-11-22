@@ -332,6 +332,7 @@ public class CordovaLocationServices extends CordovaPlugin implements
         mPrevArgs = null;
     }
 
+    // only used for gps navigating bubble
     private void getLastLocation(JSONArray args, CallbackContext callbackContext) {
         int maximumAge;
         try {
