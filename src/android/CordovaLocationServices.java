@@ -221,8 +221,8 @@ public class CordovaLocationServices extends CordovaPlugin implements
         JSONObject o = new JSONObject();
 
         try {
-            o.put("latitude", 0);//loc.getLatitude()
-            o.put("longitude", 0);//loc.getLongitude()
+            o.put("latitude", loc.getLatitude());
+            o.put("longitude", loc.getLongitude());
             o.put("altitude", (loc.hasAltitude() ? loc.getAltitude() : null));
             o.put("accuracy", loc.getAccuracy());
             o.put("heading",
