@@ -48,7 +48,10 @@ public class CordovaLocationServices extends CordovaPlugin implements
 
     private static final int LOCATION_PERMISSION_REQUEST = 0;
 
+    // additional variables for extra location request
     private FusedLocationProviderClient fusedLocationClient;
+    private LocationCallback locationCallback;
+
     private CordovaLocationListener mListener;
     private boolean mWantLastLocation = false;
     private boolean mWantUpdates = false;
@@ -183,13 +186,21 @@ public class CordovaLocationServices extends CordovaPlugin implements
                 mGApiClient.connect();
             }
             if (action.equals("getLocation")) {
+                // get current location - require a fresh location request
                 LocationRequest locationRequest = new LocationRequest();
                 locationRequest.setMaxWaitTime(30000);
-                locationRequest.setInterval(10000);
-                locationRequest.setFastestInterval(5000);
+                locationRequest.setInterval(interval);
+                locationRequest.setFastestInterval(fastInterval);
                 locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
-                LocationCallback mLocationCallback = new LocationCallback() {
+                // cancel old callback - make sure that it is a new location request
+                if (locationCallback != null) {
+                  fusedLocationClient.removeLocationUpdates(locationCallback);
+                  locationCallback = null;
+                }
+
+                // create new callback
+                locationCallback = new LocationCallback() {
                     @Override
                     public void onLocationResult(LocationResult locationResult) {
                         if (locationResult == null) {
@@ -197,9 +208,6 @@ public class CordovaLocationServices extends CordovaPlugin implements
                         }
                         for (Location location : locationResult.getLocations()) {
                             if (location != null) {
-                            //     fail(CordovaLocationListener.POSITION_UNAVAILABLE,
-                            // location.getLatitude()+"", callbackContext,
-                            // false);
                                 PluginResult result = new PluginResult(PluginResult.Status.OK,
                                         returnLocationJSON(location));
                                 callbackContext.sendPluginResult(result);
@@ -207,17 +215,11 @@ public class CordovaLocationServices extends CordovaPlugin implements
                         }
                     }
                 };
-                fusedLocationClient.requestLocationUpdates(locationRequest, mLocationCallback, null);
-                // PluginResult result = new PluginResult(PluginResult.Status.OK,
-                //         returnLocationJSON(last));
-                // callbackContext.sendPluginResult(result);
+
+                // fresh location request
+                fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
 
 
-                // if (mGApiClient.isConnected()) {
-                //     getCurrentLocation(args, callbackContext);
-                // } else {
-                //     setWantLastLocation(args, callbackContext);
-                // }
             } else if (action.equals("addWatch")) {
                 getListener().setLocationRequestParams(priority,
                         interval, fastInterval);
