@@ -181,9 +181,12 @@ public class CordovaLocationServices extends CordovaPlugin implements
                 Location last = LocationServices.FusedLocationApi.getLastLocation(mGApiClient);
                 // Check if we can use lastKnownLocation to get a quick reading and use
                 // less battery
-                PluginResult result = new PluginResult(PluginResult.Status.OK,
-                        returnLocationJSON(last));
-                callbackContext.sendPluginResult(result);
+                fail(CordovaLocationListener.POSITION_UNAVAILABLE,
+                        last.getLatitude(), callbackContext,
+                        false);
+                // PluginResult result = new PluginResult(PluginResult.Status.OK,
+                //         returnLocationJSON(last));
+                // callbackContext.sendPluginResult(result);
 
 
                 // if (mGApiClient.isConnected()) {
