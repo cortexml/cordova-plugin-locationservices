@@ -177,9 +177,6 @@ public class CordovaLocationServices extends CordovaPlugin implements
                 mGApiClient.connect();
             }
             if (action.equals("getLocation")) {
-                fail(CordovaLocationListener.POSITION_UNAVAILABLE,
-                        "Oh no.", callbackContext,
-                        false);
                 if (mGApiClient.isConnected()) {
                     getLastLocation(args, callbackContext);
                 } else {
@@ -305,8 +302,9 @@ public class CordovaLocationServices extends CordovaPlugin implements
             e.printStackTrace();
             maximumAge = 0;
         }
+        // LocationServices.FusedLocationApi.getCurrentLocation(mGApiClient);
         Location last = LocationServices.FusedLocationApi
-                .getLastLocation(mGApiClient);
+                .getCurrentLocation(mGApiClient);
         // Check if we can use lastKnownLocation to get a quick reading and use
         // less battery
         if (last != null
@@ -315,7 +313,7 @@ public class CordovaLocationServices extends CordovaPlugin implements
                     returnLocationJSON(last));
             callbackContext.sendPluginResult(result);
         } else {
-            getCurrentLocation(callbackContext, Integer.MAX_VALUE);
+            // getCurrentLocation(callbackContext, Integer.MAX_VALUE);
         }
     }
 
