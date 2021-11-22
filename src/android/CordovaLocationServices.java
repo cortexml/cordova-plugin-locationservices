@@ -197,22 +197,17 @@ public class CordovaLocationServices extends CordovaPlugin implements
                         }
                         for (Location location : locationResult.getLocations()) {
                             if (location != null) {
-                                fail(CordovaLocationListener.POSITION_UNAVAILABLE,
-                            location.getLatitude()+"", callbackContext,
-                            false);
-                                // PluginResult result = new PluginResult(PluginResult.Status.OK,
-                                //         returnLocationJSON(location));
-                                // callbackContext.sendPluginResult(result);
+                            //     fail(CordovaLocationListener.POSITION_UNAVAILABLE,
+                            // location.getLatitude()+"", callbackContext,
+                            // false);
+                                PluginResult result = new PluginResult(PluginResult.Status.OK,
+                                        returnLocationJSON(location));
+                                callbackContext.sendPluginResult(result);
                             }
                         }
                     }
                 };
                 fusedLocationClient.requestLocationUpdates(locationRequest, mLocationCallback, null);
-
-
-                fail(CordovaLocationListener.POSITION_UNAVAILABLE,
-                        fusedLocationClient.toString(), callbackContext,
-                        false);
                 // PluginResult result = new PluginResult(PluginResult.Status.OK,
                 //         returnLocationJSON(last));
                 // callbackContext.sendPluginResult(result);
