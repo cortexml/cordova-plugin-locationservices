@@ -135,6 +135,7 @@ var LocationServicesWithoutPermission = {
             successCallback(pos);
         };
         var fail = function(e) {
+            alert(e)
             clearTimeout(timeoutTimer.timer);
             timeoutTimer.timer = null;
             var err = new PositionError(e.code, e.message);
