@@ -198,7 +198,7 @@ public class CordovaLocationServices extends CordovaPlugin implements
                         for (Location location : locationResult.getLocations()) {
                             if (location != null) {
                                 PluginResult result = new PluginResult(PluginResult.Status.OK,
-                                        returnLocationJSON(last));
+                                        returnLocationJSON(location));
                                 callbackContext.sendPluginResult(result);
                             }
                         }
