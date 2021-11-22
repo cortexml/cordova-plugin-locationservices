@@ -27,6 +27,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -44,6 +47,11 @@ public class CordovaLocationServices extends CordovaPlugin implements
         GoogleApiClient.ConnectionCallbacks {
 
     private static final int LOCATION_PERMISSION_REQUEST = 0;
+    private static final int MAX_LOCATION_REQUEST_TIMEOUT = 30000;
+
+    // additional variables for extra location request
+    private FusedLocationProviderClient fusedLocationClient;
+    private LocationCallback locationCallback;
 
     private CordovaLocationListener mListener;
     private boolean mWantLastLocation = false;
@@ -60,6 +68,8 @@ public class CordovaLocationServices extends CordovaPlugin implements
         mGApiClient = new GoogleApiClient.Builder(cordova.getActivity())
                 .addApi(LocationServices.API).addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(getGApiUtils()).build();
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(cordova.getActivity());
     }
 
     @Override
@@ -177,11 +187,41 @@ public class CordovaLocationServices extends CordovaPlugin implements
                 mGApiClient.connect();
             }
             if (action.equals("getLocation")) {
-                if (mGApiClient.isConnected()) {
-                    getLastLocation(args, callbackContext);
-                } else {
-                    setWantLastLocation(args, callbackContext);
+                // get current location - require a fresh location request
+                LocationRequest locationRequest = new LocationRequest();
+                locationRequest.setMaxWaitTime(MAX_LOCATION_REQUEST_TIMEOUT);
+                locationRequest.setInterval(interval);
+                locationRequest.setFastestInterval(fastInterval);
+                locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+                // cancel old callback - make sure that it is a new location request
+                if (locationCallback != null) {
+                  fusedLocationClient.removeLocationUpdates(locationCallback);
+                  locationCallback = null;
                 }
+
+                // create new callback
+                locationCallback = new LocationCallback() {
+                    @Override
+                    public void onLocationResult(LocationResult locationResult) {
+                        if (locationResult == null) {
+                            fail(CordovaLocationListener.POSITION_UNAVAILABLE,
+                                    "Unavailable to obtain location at the moment. Please try again later.", callbackContext,
+                                    false);
+                            return;
+                        }
+                        for (Location location : locationResult.getLocations()) {
+                            if (location != null) {
+                                PluginResult result = new PluginResult(PluginResult.Status.OK,
+                                        returnLocationJSON(location));
+                                callbackContext.sendPluginResult(result);
+                            }
+                        }
+                    }
+                };
+
+                // fresh location request
+                fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
             } else if (action.equals("addWatch")) {
                 getListener().setLocationRequestParams(priority,
                         interval, fastInterval);
@@ -294,6 +334,7 @@ public class CordovaLocationServices extends CordovaPlugin implements
         mPrevArgs = null;
     }
 
+    // deprecated
     private void getLastLocation(JSONArray args, CallbackContext callbackContext) {
         int maximumAge;
         try {
@@ -302,8 +343,8 @@ public class CordovaLocationServices extends CordovaPlugin implements
             e.printStackTrace();
             maximumAge = 0;
         }
-        Location last = LocationServices.FusedLocationApi
-                .getLastLocation(mGApiClient);
+
+        Location last = LocationServices.FusedLocationApi.getLastLocation(mGApiClient);
         // Check if we can use lastKnownLocation to get a quick reading and use
         // less battery
         if (last != null
