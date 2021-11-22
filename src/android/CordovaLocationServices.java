@@ -27,6 +27,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -177,11 +178,19 @@ public class CordovaLocationServices extends CordovaPlugin implements
                 mGApiClient.connect();
             }
             if (action.equals("getLocation")) {
-                if (mGApiClient.isConnected()) {
-                    getCurrentLocation(args, callbackContext);
-                } else {
-                    setWantLastLocation(args, callbackContext);
-                }
+                Location last = LocationServices.FusedLocationApi.getLastLocation(mGApiClient);
+                // Check if we can use lastKnownLocation to get a quick reading and use
+                // less battery
+                PluginResult result = new PluginResult(PluginResult.Status.OK,
+                        returnLocationJSON(last));
+                callbackContext.sendPluginResult(result);
+
+
+                // if (mGApiClient.isConnected()) {
+                //     getCurrentLocation(args, callbackContext);
+                // } else {
+                //     setWantLastLocation(args, callbackContext);
+                // }
             } else if (action.equals("addWatch")) {
                 getListener().setLocationRequestParams(priority,
                         interval, fastInterval);
@@ -302,7 +311,8 @@ public class CordovaLocationServices extends CordovaPlugin implements
             e.printStackTrace();
             maximumAge = 0;
         }
-        Location last = LocationServices.FusedLocationApi.getCurrentLocation(mGApiClient);
+
+        Location last = LocationServices.FusedLocationApi.getLastLocation(mGApiClient);
         // Check if we can use lastKnownLocation to get a quick reading and use
         // less battery
         if (last != null
