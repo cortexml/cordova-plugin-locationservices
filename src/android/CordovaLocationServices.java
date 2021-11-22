@@ -30,6 +30,7 @@ import android.util.Log;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.FusedLocationProviderClient;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -46,6 +47,7 @@ public class CordovaLocationServices extends CordovaPlugin implements
     private static final int LOCATION_PERMISSION_REQUEST = 0;
 
     private CordovaLocationListener mListener;
+    private FusedLocationProviderClient fusedLocationClient;
     private boolean mWantLastLocation = false;
     private boolean mWantUpdates = false;
     private String[] permissions = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
@@ -306,7 +308,8 @@ public class CordovaLocationServices extends CordovaPlugin implements
             maximumAge = 0;
         }
         // LocationServices.FusedLocationApi.getCurrentLocation(mGApiClient);
-        Location last = LocationServices.FusedLocationApi.getCurrentLocation(mGApiClient);
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this.cordova.getActivity());
+        Location last = fusedLocationClient.getCurrentLocation();
         // Check if we can use lastKnownLocation to get a quick reading and use
         // less battery
         if (last != null
