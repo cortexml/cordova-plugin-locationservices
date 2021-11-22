@@ -47,6 +47,7 @@ public class CordovaLocationServices extends CordovaPlugin implements
         GoogleApiClient.ConnectionCallbacks {
 
     private static final int LOCATION_PERMISSION_REQUEST = 0;
+    private static final int MAX_LOCATION_REQUEST_TIMEOUT = 30000;
 
     // additional variables for extra location request
     private FusedLocationProviderClient fusedLocationClient;
@@ -188,7 +189,7 @@ public class CordovaLocationServices extends CordovaPlugin implements
             if (action.equals("getLocation")) {
                 // get current location - require a fresh location request
                 LocationRequest locationRequest = new LocationRequest();
-                locationRequest.setMaxWaitTime(30000);
+                locationRequest.setMaxWaitTime(MAX_LOCATION_REQUEST_TIMEOUT);
                 locationRequest.setInterval(interval);
                 locationRequest.setFastestInterval(fastInterval);
                 locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -218,8 +219,6 @@ public class CordovaLocationServices extends CordovaPlugin implements
 
                 // fresh location request
                 fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
-
-
             } else if (action.equals("addWatch")) {
                 getListener().setLocationRequestParams(priority,
                         interval, fastInterval);

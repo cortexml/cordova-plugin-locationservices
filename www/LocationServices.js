@@ -146,32 +146,18 @@ var LocationServicesWithoutPermission = {
             }
         };
 
+
         exec(win, fail, "LocationServices", "getLocation", [options.maximumAge, options.enableHighAccuracy]);
-        // Check our cached position, if its timestamp difference with current time is less than the maximumAge, then just
-        // fire the success callback with the cached position.
-        // if (LocationServicesWithoutPermission.lastPosition && options.maximumAge && ((Date.now() - LocationServicesWithoutPermission.lastPosition.timestamp) <= options.maximumAge)) {
-        //   successCallback(LocationServicesWithoutPermission.lastPosition);
-        //   // If the cached position check failed and the timeout was set to 0, error out with a TIMEOUT error object.
-        // } else if (options.timeout === 0) {
-        //   fail({
-        //     code: PositionError.TIMEOUT,
-        //     message: "timeout value in PositionOptions set to 0 and no cached Position object available, or cached Position object's age exceeds provided PositionOptions' maximumAge parameter."
-        //   });
-        //   // Otherwise we have to call into native to retrieve a position.
-        // } else {
-        //   if (options.timeout !== Infinity) {
-        //     // If the timeout value was not set to Infinity (default), then
-        //     // set up a timeout function that will fire the error callback
-        //     // if no successful position was retrieved before timeout expired.
-        //     timeoutTimer.timer = createTimeout(fail, options.timeout);
-        //   } else {
-        //     // This is here so the check in the win function doesn't mess stuff up
-        //     // may seem weird but this guarantees timeoutTimer is
-        //     // always truthy before we call into native
-        //     timeoutTimer.timer = true;
-        //   }
-        //   exec(win, fail, "LocationServices", "getLocation", [options.maximumAge, options.enableHighAccuracy]);
-        // }
+
+        if (options.timeout !== Infinity) {
+            timeoutTimer.timer = createTimeout(fail, options.timeout);
+        } else {
+            // This is here so the check in the win function doesn't mess stuff up
+            // may seem weird but this guarantees timeoutTimer is
+            // always truthy before we call into native
+            timeoutTimer.timer = true;
+        }
+        exec(win, fail, "LocationServices", "getLocation", [options.maximumAge, options.enableHighAccuracy]);
         return timeoutTimer;
     },
     /**
