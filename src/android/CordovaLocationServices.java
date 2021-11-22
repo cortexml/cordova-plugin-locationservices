@@ -193,16 +193,16 @@ public class CordovaLocationServices extends CordovaPlugin implements
                     @Override
                     public void onLocationResult(LocationResult locationResult) {
                         if (locationResult == null) {
-                            fail(CordovaLocationListener.POSITION_UNAVAILABLE,
-                        "Oh no.", callbackContext,
-                        false);
                             return;
                         }
                         for (Location location : locationResult.getLocations()) {
                             if (location != null) {
-                                PluginResult result = new PluginResult(PluginResult.Status.OK,
-                                        returnLocationJSON(location));
-                                callbackContext.sendPluginResult(result);
+                                fail(CordovaLocationListener.POSITION_UNAVAILABLE,
+                            location.getLatitude()+"", callbackContext,
+                            false);
+                                // PluginResult result = new PluginResult(PluginResult.Status.OK,
+                                //         returnLocationJSON(location));
+                                // callbackContext.sendPluginResult(result);
                             }
                         }
                     }
