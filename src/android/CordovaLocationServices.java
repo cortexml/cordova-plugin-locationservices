@@ -47,7 +47,8 @@ public class CordovaLocationServices extends CordovaPlugin implements
         GoogleApiClient.ConnectionCallbacks {
 
     private static final int LOCATION_PERMISSION_REQUEST = 0;
-    private static final int MAX_LOCATION_REQUEST_TIMEOUT = 30000;
+    // set a long timeout so that this runs in the background even if it is terminated in ionic
+    private static final int MAX_LOCATION_REQUEST_TIMEOUT = 180000;
 
     // additional variables for extra location request
     private FusedLocationProviderClient fusedLocationClient;
